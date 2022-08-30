@@ -21,28 +21,22 @@ module.exports = ({ onGetWebpackConfig }) => {
         preview: require.resolve('./src/preview.tsx'),
       },
     });
-    config
-      .plugin('index')
-      .use(HtmlWebpackPlugin, [
-        {
-          inject: false,
-          templateParameters: {
-          },
-          template: require.resolve('./public/index.html'),
-          filename: 'index.html',
-        },
-      ]);
-    config
-      .plugin('preview')
-      .use(HtmlWebpackPlugin, [
-        {
-          inject: false,
-          templateParameters: {
-          },
-          template: require.resolve('./public/preview.html'),
-          filename: 'preview.html',
-        },
-      ]);
+    config.plugin('index').use(HtmlWebpackPlugin, [
+      {
+        inject: false,
+        templateParameters: {},
+        template: require.resolve('./public/index.html'),
+        filename: 'index.html',
+      },
+    ]);
+    config.plugin('preview').use(HtmlWebpackPlugin, [
+      {
+        inject: false,
+        templateParameters: {},
+        template: require.resolve('./public/preview.html'),
+        filename: 'preview.html',
+      },
+    ]);
 
     config.plugins.delete('hot');
     config.devServer.hot(false);
@@ -50,9 +44,14 @@ module.exports = ({ onGetWebpackConfig }) => {
     config.module // fixes https://github.com/graphql/graphql-js/issues/1272
       .rule('mjs$')
       .test(/\.mjs$/)
-      .include
-        .add(/node_modules/)
-        .end()
+      .include.add(/node_modules/)
+      .end()
       .type('javascript/auto');
+
+    config.module
+      .rule('postcss-loader')
+      .test(/\.css$/)
+      .use(['tailwindcss', 'autoprefixer'])
+      .loader('postcss-loader');
   });
 };
